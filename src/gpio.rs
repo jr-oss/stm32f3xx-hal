@@ -189,7 +189,7 @@ unsafe impl Send for Gpiox {}
 // # SAFETY
 // As Gpiox uses `dyn GpioRegExt` pointer internally, `Sync` is not auto-implemented.
 // But since GpioExt does only do atomic operations without side-effects we can assume
-// that it safe to `Send` this type.
+// that it safe to `Sync` this type.
 unsafe impl Sync for Gpiox {}
 
 impl private::Gpio for Gpiox {
