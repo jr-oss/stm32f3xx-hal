@@ -14,7 +14,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## Unreleased
 
-No changes.
+### Fixed
+
+- Read valid data from data register even if reception of next character has started
 
 ## [v0.9.0] - 2022-03-06
 
