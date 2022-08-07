@@ -100,9 +100,9 @@ mod app {
 
         if serial.is_event_triggered(Event::ReceiveDataRegisterNotEmpty) {
             dir.set_high().unwrap();
-            serial.configure_interrupt(Event::ReceiveDataRegisterNotEmpty, Toggle::Off);
             match serial.read() {
                 Ok(byte) => {
+                    serial.configure_interrupt(Event::ReceiveDataRegisterNotEmpty, Toggle::Off);
                     serial.write(byte).unwrap();
                     rprintln!("{:?}", char::from_u32(byte.into()).unwrap_or('?'));
                     serial.configure_interrupt(Event::TransmissionComplete, Toggle::On);
