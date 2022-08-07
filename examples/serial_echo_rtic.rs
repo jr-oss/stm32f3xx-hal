@@ -111,6 +111,19 @@ mod app {
             };
         }
 
+        // serial.read() fetches current usart_isr value and checks cached flags.
+        // If between reading usart_isr and processing rxne flag an overrun
+        // occurs, it will not be handled by serial.read().
+        // That leaves the peripheral with ore flag set, which drops
+        // all further characters. See RM0316, chapter 29.5.3 USART receiver:
+        // "After that point, any data received during overrun is lost."
+        // serial.read() (which would clear the overrun condition), will
+        // not be called afterwards, because rxne does not get set.
+        if serial.is_event_triggered(Event::OverrunError) {
+            rprintln!("overrun error");
+            serial.clear_event(Event::OverrunError);
+        }
+
         // It is perfectly viable to just use `is_event_triggered` here,
         // but this is a showcase, to also be able to used `triggered_events`
         // and other functions enabled by the "enumset" feature.
