@@ -26,7 +26,7 @@ mod app {
     #[monotonic(binds = SysTick, default = true)]
     type AppMono = Systick<100>; // 100 Hz / 10 ms granularity
 
-    type SerialType = Serial<pac::USART1, (gpio::PA9<AF7<PushPull>>, gpio::PA10<AF7<PushPull>>)>;
+    type SerialType = Serial<pac::USART1, (gpio::PC4<AF7<PushPull>>, gpio::PC5<AF7<PushPull>>)>;
     // The LED that will light up when data is received via serial
     type DirType = gpio::PE13<Output<PushPull>>;
 
@@ -61,26 +61,26 @@ mod app {
         dir.set_low().unwrap();
 
         // SERIAL
-        let mut gpioa = cx.device.GPIOA.split(&mut rcc.ahb);
+        let mut gpioc = cx.device.GPIOC.split(&mut rcc.ahb);
         let mut pins = (
-            gpioa
+            gpioc
                 // Tx pin
-                .pa9
+                .pc4
                 // configure this pin to make use of its `USART1_TX` alternative function
                 // (AF mapping taken from table 14 "Alternate functions for port A" of the datasheet at
                 //  https://www.st.com/en/microcontrollers-microprocessors/stm32f303vc.html)
-                .into_af_push_pull(&mut gpioa.moder, &mut gpioa.otyper, &mut gpioa.afrh),
-            gpioa
+                .into_af_push_pull(&mut gpioc.moder, &mut gpioc.otyper, &mut gpioc.afrl),
+            gpioc
                 // Rx pin
-                .pa10
+                .pc5
                 // configure this pin to make use of its `USART1_RX` alternative function
                 // (AF mapping taken from table 14 "Alternate functions for port A" of the datasheet at
                 //  https://www.st.com/en/microcontrollers-microprocessors/stm32f303vc.html)
-                .into_af_push_pull(&mut gpioa.moder, &mut gpioa.otyper, &mut gpioa.afrh),
+                .into_af_push_pull(&mut gpioc.moder, &mut gpioc.otyper, &mut gpioc.afrl),
         );
-        pins.1.internal_pull_up(&mut gpioa.pupdr, true);
+        pins.1.internal_pull_up(&mut gpioc.pupdr, true);
         let mut serial: SerialType =
-            Serial::new(cx.device.USART1, pins, 19200.Bd(), clocks, &mut rcc.apb2);
+            Serial::new(cx.device.USART1, pins, 115200.Bd(), clocks, &mut rcc.apb2);
         serial.configure_interrupt(Event::ReceiveDataRegisterNotEmpty, Toggle::On);
 
         rprintln!("post init");
